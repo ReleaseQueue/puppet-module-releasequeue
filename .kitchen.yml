@@ -1,0 +1,34 @@
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: puppet_apply
+  manifests_path: test/manifests
+  modules_path: modules
+  hiera_data_path: hieradata
+  install_custom_facts: true
+  puppet_debug: true
+  puppet_verbose: true
+  custom_facts: {
+      'rq_email':          '<%= ENV["RQ_EMAIL"] %>',
+      'rq_password':       "'<%= ENV["RQ_PASSWORD"] %>'",
+      'rq_local_username': 'vagrant',
+      'rq_ip':             '<%= ENV["RQ_IP"] %>'
+    }
+
+
+platforms:
+  - name: ubuntu-14.04-i386
+  - name: centos-6.6-i386
+  - name: debian-8.2-i386
+  - name: debian-6.0.8-i386
+  - name: fedora-20-i386
+
+
+
+suites:
+  - name: default
+    manifest: site.pp
+
+

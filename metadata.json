@@ -1,0 +1,33 @@
+{
+  "name": "releasequeue",
+  "version": "0.1.0",
+  "author": "test",
+  "summary": "Installs/Configures apt/yum repositories from Releasequeue",
+  "license": "MIT",
+  "source": "https://github.com/ReleaseQueue/puppet-releasequeue",
+  "project_page": "https://github.com/ReleaseQueue/puppet-releasequeue",
+  "issues_url": "https://github.com/ReleaseQueue/puppet-releasequeue/issues",
+  "dependencies": [
+    {"name": "puppetlabs/stdlib", "version_requirement": ">= 1.0.0"},
+    {"name": "puppetlabs/apt",    "version_requirement": "~> 2.1.1"},
+    {"name": "saheba/netrc",      "version_requirement": "~> 1.0.0"}
+  ],
+  "operatingsystem_support": [
+       {
+           "operatingsystem": "Ubuntu"
+       },
+       {
+           "operatingsystem": "Debian"
+       },
+       {
+           "operatingsystem": "RedHat"
+       },
+       {
+           "operatingsystem": "CentOS"
+       },
+       {
+           "operatingsystem": "Fedora"
+       }
+  ]
+}
+
