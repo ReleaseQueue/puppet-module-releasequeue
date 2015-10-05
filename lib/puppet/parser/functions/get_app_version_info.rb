@@ -11,7 +11,7 @@ module Puppet::Parser::Functions
     require "net/https"
     require "uri"
 
-    BASE_URL = "https://172.16.207.1"
+    BASE_URL = "https://api.releasequeue.com"
 
     uri = URI.parse("#{BASE_URL}/signin")
     http = Net::HTTP.new(uri.host, uri.port)
@@ -19,7 +19,12 @@ module Puppet::Parser::Functions
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     request = Net::HTTP::Post.new(uri.request_uri)
     request.set_form_data({"email" => email, "password" => password})
-    response = http.request(request)
+    begin
+      response = http.request(request)
+    rescue
+      return []
+    end
+
     if response.code != "200"
       raise "Error code received from RQ server for #{uri}: #{response.code} \n#{response.body}"
     end
@@ -52,7 +57,7 @@ module Puppet::Parser::Functions
       repo["components_joined"] = repo["components"].join(" ")
       esc_email = CGI::escape(email)
       esc_password = CGI::escape(password)
-      esc_url = repo['url'].sub!('https://', "https://#{esc_email}:#{esc_password}@")
+      esc_url = repo['url'].sub('https://', "https://#{esc_email}:#{esc_password}@")
       repo["urls"] = repo["components"].map{ |comp| "#{esc_url}/#{repo['distribution']}/#{comp}"}
       return repos[0]
     end

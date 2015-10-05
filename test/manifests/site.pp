@@ -1,5 +1,11 @@
-include releasequeue
 
+warning($rq_ip)
+host { 'api.releasequeue.com':
+    ip  => "$rq_ip",
+}
+host { 'releasequeue.com':
+    ip => "$rq_ip",
+}
 
 if downcase($osfamily) == 'debian' {
   file { '/usr/local/share/ca-certificates/my_cert.crt':
@@ -9,15 +15,15 @@ if downcase($osfamily) == 'debian' {
 
   exec { 'update_certs':
     command => 'update-ca-certificates',
-    path    => ['/bin', '/usr/bin', '/usr/sbin']
+    path    => ['/bin', '/usr/bin', '/usr/sbin'],
   }
   exec { 'dpkg_reconfigure':
     command => 'sudo dpkg-reconfigure ca-certificates -f noninteractive',
-    path    => ['/bin', '/usr/bin', '/usr/sbin']
+    path    => ['/bin', '/usr/bin', '/usr/sbin'],
   }
   package { 'apt-transport-https':
     name   => 'apt-transport-https',
-    ensure => installed
+    ensure => installed,
   }
 }
 elsif downcase($osfamily) == 'redhat' {
@@ -27,27 +33,15 @@ elsif downcase($osfamily) == 'redhat' {
   }
   exec { 'update_certs':
     command => 'update-ca-trust enable',
-    path    => ['/bin', '/usr/bin', '/usr/sbin']
+    path    => ['/bin', '/usr/bin', '/usr/sbin'],
   }
   exec { 'update_certs2':
     command => 'update-ca-trust extract',
-    path    => ['/bin', '/usr/bin', '/usr/sbin']
+    path    => ['/bin', '/usr/bin', '/usr/sbin'],
   }
 
 }
 
-file_line { 'add_host':
-  path => '/etc/hosts',
-  line => "$rq_ip releasequeue.com",
-}
-file_line { 'add_host2':
-  path => '/etc/hosts',
-  line => "$rq_ip api.releasequeue.com",
-}
-
-
-warning("$rq_email")
-warning("$rq_password")
 
 releasequeue::application { 'app1':
   version        => '1.0',
