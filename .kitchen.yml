@@ -11,8 +11,8 @@ provisioner:
   puppet_debug: true
   puppet_verbose: true
   custom_facts: {
-      'rq_email':          '<%= ENV["RQ_EMAIL"] %>',
-      'rq_password':       "'<%= ENV["RQ_PASSWORD"] %>'",
+      'rq_username':       '<%= ENV["RQ_USERNAME"] %>',
+      'rq_api_key':        '<%= ENV["RQ_API_KEY"] %>',
       'rq_local_username': 'vagrant',
       'rq_ip':             '<%= ENV["RQ_IP"] %>'
     }

@@ -4,14 +4,15 @@ define multiple_yumrepos {
   $app_name = inline_template('<%= @title.split("/")[-5] + "_" + @title.split("/")[-1] %>')
   yumrepo { $app_name:
     baseurl => $title,
-    descr => "Repo for $app_name"
+    descr   => "Repo for ${app_name}"
   }
 }
 
+#Adds deb and rpm repos defined in ReleaseQueue to your env
 define releasequeue::application ($application_name = $title,
   $version        = undef,
-  $email          = undef,
-  $password       = undef,
+  $username       = undef,
+  $api_key        = undef,
   $local_username = undef
   )
 {
@@ -20,29 +21,29 @@ define releasequeue::application ($application_name = $title,
     fail('Option "version" is mandatory')
   }
 
-  if $email == undef {
-    fail('Option "email" is mandatory')
+  if $username == undef {
+    fail('Option "username" is mandatory')
   }
 
-  if $password == undef {
-    fail('Option "password" is mandatory')
+  if $api_key == undef {
+    fail('Option "api_key" is mandatory')
   }
 
   if $local_username == undef {
     fail('Option "local_username" is mandatory')
   }
 
-  $pkg_type =  $osfamily ? {
+  $pkg_type =  $::osfamily ? {
     'debian' => 'deb',
     'redhat' => 'rpm',
     default  => nil,
   }
 
   if $pkg_type == nil {
-    fail("${operatingsystem} not supported!")
+    fail("$::operatingsystem not supported!")
   }
 
-  $repo = get_app_version_info($application_name, $version, $pkg_type, $::codename, $email, $password)
+  $repo = get_app_version_info($application_name, $version, $pkg_type, $::codename, $username, $api_key)
   if $repo != [] {
     if $pkg_type == 'deb' {
 
@@ -52,9 +53,9 @@ define releasequeue::application ($application_name = $title,
       }
 
       netrc::foruser {"netrc_${local_username}":
-        root_home_directory         => $root_home_directory,
-        user                        => $local_username,
-        machine_user_password_triples => ['api.releasequeue.com', $email, $password]
+        root_home_directory           => $root_home_directory,
+        user                          => $local_username,
+        machine_user_password_triples => ['api.releasequeue.com', $api_key, ''] #using api key as username
       }
 
       $netrc_path = "${root_home_directory}/${local_username}/.netrc"

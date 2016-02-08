@@ -4,41 +4,21 @@ module Puppet::Parser::Functions
     version          = args[1]
     pkg_type         = args[2]
     distribution     = args[3]
-    email            = args[4]
-    password         = args[5]
-    #raise(Puppet::ParseError, "Error in get_app_version_info #{email} #{password}")
+    username         = args[4]
+    api_key          = args[5]
 
     require "net/https"
     require "uri"
 
-    BASE_URL = "https://api.releasequeue.com"
-
-    uri = URI.parse("#{BASE_URL}/signin")
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request = Net::HTTP::Post.new(uri.request_uri)
-    request.set_form_data({"email" => email, "password" => password})
-    begin
-      response = http.request(request)
-    rescue
-      return []
-    end
-
-    if response.code != "200"
-      raise "Error code received from RQ server for #{uri}: #{response.code} \n#{response.body}"
-    end
-
-    json = JSON.parse(response.body)
-    token = json["token"]
-    username = json["username"]
+    BASE_URL = "https://api-development.releasequeue.com"
+    SERVER_PORT = 443
 
     uri = URI.parse("#{BASE_URL}/users/#{username}/applications/#{application_name}/versions/#{version}")
-    http = Net::HTTP.new(uri.host, uri.port)
+    http = Net::HTTP.new(uri.host, SERVER_PORT)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     request = Net::HTTP::Get.new(uri.request_uri)
-    request["x-auth-token"] = token
+    request["Authorization"] = "Bearer #{api_key}"
     response = http.request(request)
     if response.code != "200"
       raise "Error code received from RQ server for #{uri}: #{response.code} \n#{response.body}"
@@ -55,9 +35,7 @@ module Puppet::Parser::Functions
     else
       repo = repos[0]
       repo["components_joined"] = repo["components"].join(" ")
-      esc_email = CGI::escape(email)
-      esc_password = CGI::escape(password)
-      esc_url = repo['url'].sub('https://', "https://#{esc_email}:#{esc_password}@")
+      esc_url = repo['url'].sub('https://', "https://#{api_key}@")
       repo["urls"] = repo["components"].map{ |comp| "#{esc_url}/#{repo['distribution']}/#{comp}"}
       return repos[0]
     end
