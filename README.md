@@ -19,8 +19,8 @@ lsb_release is required for mapping between os codename and configuration in Rel
 ```
 releasequeue::application { 'app1':
   version        => '1.0',
-  email          => 'your_releasequeue_login_email',
-  password       => 'releasequeue_password',
+  username       => 'your_releasequeue_username',
+  api_key        => 'releasequeue_password',
   local_username => 'local_user_on_the_machine', #required for setting up netrc for the Releasequeue connection
 }
 ```

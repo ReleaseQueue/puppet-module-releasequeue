@@ -10,7 +10,7 @@ module Puppet::Parser::Functions
     require "net/https"
     require "uri"
 
-    BASE_URL = "https://api-development.releasequeue.com"
+    BASE_URL = "https://api.releasequeue.com"
     SERVER_PORT = 443
 
     uri = URI.parse("#{BASE_URL}/users/#{username}/applications/#{application_name}/versions/#{version}")
